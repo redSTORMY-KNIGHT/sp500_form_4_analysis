@@ -115,7 +115,7 @@ if selected_sectors:
 if selected_cap_categories:
     filtered_investors = filtered_investors[filtered_investors['Most_Common_Company_Cap_Category'].isin(selected_cap_categories)]
 
-# Display results
+# Display results without the index
 st.subheader(f"All Investors Overview ({len(filtered_investors)} investors)")
 cols_to_show = [
     'OWNER_NAME', 'Transaction_Count', 'Earliest_Transaction_Year', 'Most_Recent_Transaction_Year',
@@ -130,36 +130,9 @@ cols_to_show = [
 
 filtered_display = filtered_investors[cols_to_show].copy()
 
-st.dataframe(
-    filtered_display
-    .sort_values('Return_vs_SP500_6M', ascending=False)
-    .style.format({
-        'Transaction_Count': '{:,.0f}',
-        'Earliest_Transaction_Year': '{:.0f}',
-        'Most_Recent_Transaction_Year': '{:.0f}',
-        'Number_of_Companies': '{:,.0f}',
-        'Weighted_Return_6M': '{:.1%}',
-        'Weighted_Return_1Y': '{:.1%}',
-        'Weighted_Return_18M': '{:.1%}',
-        'Return_vs_SP500_6M': '{:.1%}',
-        'Return_vs_SP500_1Y': '{:.1%}',
-        'Return_vs_SP500_18M': '{:.1%}',
-        'Return_vs_Sector_6M': '{:.1%}',
-        'Return_vs_Sector_1Y': '{:.1%}',
-        'Return_vs_Sector_18M': '{:.1%}',
-        'Pct_Positive_vs_SP500_6M': '{:.1%}',
-        'Pct_Positive_vs_SP500_1Y': '{:.1%}',
-        'Avg_Transaction_Value': '${:,.0f}',
-        'Total_Transaction_Value': '${:,.0f}',
-        'Market Cap': '${:,.1f}M'
-    }, na_rep='')
-    .set_table_styles({
-        'Earliest_Transaction_Year': [{'selector': 'th', 'props': 'min-width: 50px;'}],
-        'Most_Recent_Transaction_Year': [{'selector': 'th', 'props': 'min-width: 50px;'}]
-    })
-)
+st.dataframe(filtered_display.sort_values('Return_vs_SP500_6M', ascending=False).reset_index(drop=True))
 
-# Individual investor details section
+# Individual investor details section without the index
 st.subheader("Individual Investor Details")
 selected_investor = st.selectbox(
     "Select an investor to see their transactions",
@@ -183,7 +156,6 @@ if selected_investor:
     for col in numeric_columns:
         investor_transactions[col] = pd.to_numeric(investor_transactions[col], errors='coerce')
     
-    # Display transactions with updated columns
     st.dataframe(
         investor_transactions[[
             'ISSUERNAME', 'ISSUERTRADINGSYMBOL', 'GICS_SECTOR', 'GICS_SUB_INDUSTRY',
@@ -195,25 +167,5 @@ if selected_investor:
             'RETURN_18M', 'Vs_SP500_18M', 'Vs_Sector_18M'
         ]]
         .sort_values('TRANS_DATE', ascending=False)
-        .style.format({
-            'TRANS_SHARES': '{:,.0f}',
-            'TRANS_PRICEPERSHARE': '${:.2f}',
-            'TOTAL_TRANS_VALUE': '${:,.0f}',
-            'SPLIT_ADJUSTMENT': '{:.2f}',
-            'ADJUSTED_TRANS_SHARES': '{:,.0f}',
-            'ADJUSTED_TRANS_PRICEPERSHARE': '${:.2f}',
-            'ADJUSTED_TOTAL_TRANS_VALUE': '${:,.0f}',
-            '6 Month Price': '${:.2f}',
-            '1 Year Price': '${:.2f}',
-            '18 Month Price': '${:.2f}',
-            'RETURN_6M': '{:.1%}',
-            'RETURN_1Y': '{:.1%}',
-            'RETURN_18M': '{:.1%}',
-            'Vs_SP500_6M': '{:.1%}',
-            'Vs_Sector_6M': '{:.1%}',
-            'Vs_SP500_1Y': '{:.1%}',
-            'Vs_Sector_1Y': '{:.1%}',
-            'Vs_SP500_18M': '{:.1%}',
-            'Vs_Sector_18M': '{:.1%}'
-        }, na_rep='')
+        .reset_index(drop=True)
     )
