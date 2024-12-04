@@ -155,7 +155,7 @@ st.dataframe(
     hide_index=True
 )
 
-# Individual investor details section without the index
+# Individual investor details section
 st.subheader("Individual Investor Details")
 selected_investor = st.selectbox(
     "Select an investor to see their transactions",
@@ -165,19 +165,6 @@ selected_investor = st.selectbox(
 if selected_investor:
     investor_cik = investor_analysis_df[investor_analysis_df['OWNER_NAME'] == selected_investor]['OWNER_CIK'].iloc[0]
     investor_transactions = transactions_df[transactions_df['OWNER_CIK'] == investor_cik].copy()
-    
-    # Convert numeric columns
-    numeric_columns = [
-        'TRANS_SHARES', 'TRANS_PRICEPERSHARE', 'TOTAL_TRANS_VALUE',
-        'SPLIT_ADJUSTMENT', 'ADJUSTED_TRANS_SHARES', 'ADJUSTED_TRANS_PRICEPERSHARE',
-        'ADJUSTED_TOTAL_TRANS_VALUE', '6 Month Price', '1 Year Price', '18 Month Price',
-        'RETURN_6M', 'RETURN_1Y', 'RETURN_18M',
-        'Vs_SP500_6M', 'Vs_Sector_6M', 'Vs_SP500_1Y', 'Vs_Sector_1Y',
-        'Vs_SP500_18M', 'Vs_Sector_18M'
-    ]
-    
-    for col in numeric_columns:
-        investor_transactions[col] = pd.to_numeric(investor_transactions[col], errors='coerce')
     
     st.dataframe(
         investor_transactions[[
@@ -189,6 +176,27 @@ if selected_investor:
             'RETURN_1Y', 'Vs_SP500_1Y', 'Vs_Sector_1Y',
             'RETURN_18M', 'Vs_SP500_18M', 'Vs_Sector_18M'
         ]]
-        .sort_values('TRANS_DATE', ascending=False),
+        .sort_values('TRANS_DATE', ascending=False)
+        .style.format({
+            'TRANS_SHARES': '{:,.0f}',  # Whole number, no decimals
+            'TRANS_PRICEPERSHARE': '${:.2f}',  # Dollar sign, 2 decimals
+            'TOTAL_TRANS_VALUE': '${:,.0f}',  # Dollar sign, thousands separator, no decimals
+            'SPLIT_ADJUSTMENT': '{:.2f}',  # 2 decimals
+            'ADJUSTED_TRANS_SHARES': '{:,.0f}',  # Whole number, no decimals
+            'ADJUSTED_TRANS_PRICEPERSHARE': '${:.2f}',  # Dollar sign, 2 decimals
+            'ADJUSTED_TOTAL_TRANS_VALUE': '${:,.0f}',  # Dollar sign, thousands separator, no decimals
+            '6 Month Price': '${:.2f}',  # Dollar sign, 2 decimals
+            '1 Year Price': '${:.2f}',  # Dollar sign, 2 decimals
+            '18 Month Price': '${:.2f}',  # Dollar sign, 2 decimals
+            'RETURN_6M': '{:.1%}',  # Percentage with 1 decimal
+            'RETURN_1Y': '{:.1%}',  # Percentage with 1 decimal
+            'RETURN_18M': '{:.1%}',  # Percentage with 1 decimal
+            'Vs_SP500_6M': '{:.1%}',  # Percentage with 1 decimal
+            'Vs_Sector_6M': '{:.1%}',  # Percentage with 1 decimal
+            'Vs_SP500_1Y': '{:.1%}',  # Percentage with 1 decimal
+            'Vs_Sector_1Y': '{:.1%}',  # Percentage with 1 decimal
+            'Vs_SP500_18M': '{:.1%}',  # Percentage with 1 decimal
+            'Vs_Sector_18M': '{:.1%}'  # Percentage with 1 decimal
+        }),
         hide_index=True
     )
