@@ -176,6 +176,15 @@ if selected_investor:
             'RETURN_1Y', 'Vs_SP500_1Y', 'Vs_Sector_1Y',
             'RETURN_18M', 'Vs_SP500_18M', 'Vs_Sector_18M'
         ]]
-        .sort_values('TRANS_DATE', ascending=False),
+        .sort_values('TRANS_DATE', ascending=False)
+        .style.format({
+            'TRANS_PRICEPERSHARE': '${:.2f}',
+            'TOTAL_TRANS_VALUE': '${:,.0f}',
+            'ADJUSTED_TRANS_PRICEPERSHARE': '${:.2f}',
+            'ADJUSTED_TOTAL_TRANS_VALUE': '${:,.0f}',
+            '6 Month Price': '${:.2f}',
+            '1 Year Price': '${:.2f}',
+            '18 Month Price': '${:.2f}'
+        }),
         hide_index=True
     )
