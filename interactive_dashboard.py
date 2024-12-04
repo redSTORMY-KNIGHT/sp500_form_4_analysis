@@ -130,7 +130,7 @@ cols_to_show = [
 
 filtered_display = filtered_investors[cols_to_show].copy()
 
-st.dataframe(filtered_display.sort_values('Return_vs_SP500_6M', ascending=False).reset_index(drop=True))
+st.dataframe(filtered_display.sort_values('Return_vs_SP500_6M', ascending=False), hide_index=True)
 
 # Individual investor details section without the index
 st.subheader("Individual Investor Details")
@@ -166,6 +166,6 @@ if selected_investor:
             'RETURN_1Y', 'Vs_SP500_1Y', 'Vs_Sector_1Y',
             'RETURN_18M', 'Vs_SP500_18M', 'Vs_Sector_18M'
         ]]
-        .sort_values('TRANS_DATE', ascending=False)
-        .reset_index(drop=True)
+        .sort_values('TRANS_DATE', ascending=False),
+        hide_index=True
     )
