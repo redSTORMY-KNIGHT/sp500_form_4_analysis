@@ -130,7 +130,28 @@ cols_to_show = [
 
 filtered_display = filtered_investors[cols_to_show].copy()
 
-st.dataframe(filtered_display.sort_values('Return_vs_SP500_6M', ascending=False), hide_index=True)
+st.dataframe(
+    filtered_display
+    .sort_values('Return_vs_SP500_6M', ascending=False)
+    .style.format({
+        'Earliest_Transaction_Year': '{:.0f}',  # Just year, no commas
+        'Most_Recent_Transaction_Year': '{:.0f}',  # Just year, no commas
+        'Weighted_Return_6M': '{:.1%}',
+        'Return_vs_SP500_6M': '{:.1%}',
+        'Return_vs_Sector_6M': '{:.1%}',
+        'Weighted_Return_1Y': '{:.1%}',
+        'Return_vs_SP500_1Y': '{:.1%}',
+        'Return_vs_Sector_1Y': '{:.1%}',
+        'Weighted_Return_18M': '{:.1%}',
+        'Return_vs_SP500_18M': '{:.1%}',
+        'Return_vs_Sector_18M': '{:.1%}',
+        'Pct_Positive_vs_SP500_6M': '{:.1%}',
+        'Pct_Positive_vs_SP500_1Y': '{:.1%}',
+        'Avg_Transaction_Value': '${:,.0f}',
+        'Total_Transaction_Value': '${:,.0f}'
+    }),
+    hide_index=True
+)
 
 # Individual investor details section without the index
 st.subheader("Individual Investor Details")
