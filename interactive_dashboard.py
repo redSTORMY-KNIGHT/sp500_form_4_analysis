@@ -166,6 +166,15 @@ if selected_investor:
     investor_cik = investor_analysis_df[investor_analysis_df['OWNER_NAME'] == selected_investor]['OWNER_CIK'].iloc[0]
     investor_transactions = transactions_df[transactions_df['OWNER_CIK'] == investor_cik].copy()
     
+    # Convert percentage columns to numeric
+    percentage_cols = [
+        'Vs_SP500_6M', 'Vs_SP500_1Y', 'Vs_SP500_18M',
+        'Vs_Sector_6M', 'Vs_Sector_1Y', 'Vs_Sector_18M'
+    ]
+    
+    for col in percentage_cols:
+        investor_transactions[col] = pd.to_numeric(investor_transactions[col], errors='coerce')
+    
     st.dataframe(
         investor_transactions[[
             'ISSUERNAME', 'ISSUERTRADINGSYMBOL', 'GICS_SECTOR', 'GICS_SUB_INDUSTRY',
