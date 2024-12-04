@@ -185,7 +185,9 @@ if selected_investor:
             '6 Month Price': '${:.2f}',
             '1 Year Price': '${:.2f}',
             '18 Month Price': '${:.2f}',
-            'RETURN_6M': '{:.1%}'
+            'RETURN_6M': '{:.1%}',
+            'RETURN_1Y': '{:.1%}',
+            'RETURN_18M': '{:.1%}'
         }),
         hide_index=True
     )
