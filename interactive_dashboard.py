@@ -184,7 +184,8 @@ if selected_investor:
             'ADJUSTED_TOTAL_TRANS_VALUE': '${:,.0f}',
             '6 Month Price': '${:.2f}',
             '1 Year Price': '${:.2f}',
-            '18 Month Price': '${:.2f}'
+            '18 Month Price': '${:.2f}',
+            'RETURN_6M': '{:.1%}'
         }),
         hide_index=True
     )
