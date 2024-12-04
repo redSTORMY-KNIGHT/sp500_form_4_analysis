@@ -134,6 +134,8 @@ st.dataframe(
     filtered_display
     .sort_values('Return_vs_SP500_6M', ascending=False)
     .style.format({
+        'Transaction_Count': '{:.0f}',  # Whole number, no decimals
+        'Number_of_Companies': '{:.0f}',  # Whole number, no decimals
         'Earliest_Transaction_Year': '{:.0f}',  # Just year, no commas
         'Most_Recent_Transaction_Year': '{:.0f}',  # Just year, no commas
         'Weighted_Return_6M': '{:.1%}',
