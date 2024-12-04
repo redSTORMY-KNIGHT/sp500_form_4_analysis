@@ -188,6 +188,9 @@ if selected_investor:
         ]]
         .sort_values('TRANS_DATE', ascending=False)
         .style.format({
+            'TRANS_SHARES': '{:.2f}',  # 2 decimal places
+            'SPLIT_ADJUSTMENT': '{:.2f}',  # 2 decimal places
+            'ADJUSTED_TRANS_SHARES': '{:.2f}',  # 2 decimal places
             'TRANS_PRICEPERSHARE': '${:.2f}',
             'TOTAL_TRANS_VALUE': '${:,.0f}',
             'ADJUSTED_TRANS_PRICEPERSHARE': '${:.2f}',
