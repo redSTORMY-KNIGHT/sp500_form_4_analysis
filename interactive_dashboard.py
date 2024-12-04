@@ -7,8 +7,8 @@ st.set_page_config(page_title="Insider Trading Analysis", layout="wide")
 # Load the data
 @st.cache_data
 def load_data():
-    transactions_df = pd.read_csv(r"C:\Users\Riot\OneDrive\Business\SP500_form4_analysis\transactions_with_returns_and_relatives.csv")
-    investor_analysis_df = pd.read_csv(r"C:\Users\Riot\OneDrive\Business\SP500_form4_analysis\investor_weighted_returns.csv")
+    transactions_df = pd.read_csv("transactions_with_returns_and_relatives.csv")
+    investor_analysis_df = pd.read_csv("investor_weighted_returns.csv")
     
     # Convert all return and performance columns to numeric
     return_columns = [
