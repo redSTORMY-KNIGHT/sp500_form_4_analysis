@@ -168,6 +168,7 @@ if selected_investor:
     
     # Convert percentage columns to numeric
     percentage_cols = [
+        'RETURN_6M', 'RETURN_1Y', 'RETURN_18M',
         'Vs_SP500_6M', 'Vs_SP500_1Y', 'Vs_SP500_18M',
         'Vs_Sector_6M', 'Vs_Sector_1Y', 'Vs_Sector_18M'
     ]
@@ -194,6 +195,9 @@ if selected_investor:
             '6 Month Price': '${:.2f}',
             '1 Year Price': '${:.2f}',
             '18 Month Price': '${:.2f}',
+            'RETURN_6M': '{:.1%}',
+            'RETURN_1Y': '{:.1%}',
+            'RETURN_18M': '{:.1%}',
             'Vs_SP500_6M': '{:.1%}',
             'Vs_SP500_1Y': '{:.1%}',
             'Vs_SP500_18M': '{:.1%}',
