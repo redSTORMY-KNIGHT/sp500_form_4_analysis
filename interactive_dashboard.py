@@ -187,7 +187,13 @@ if selected_investor:
             '18 Month Price': '${:.2f}',
             'RETURN_6M': '{:.1%}',
             'RETURN_1Y': '{:.1%}',
-            'RETURN_18M': '{:.1%}'
+            'RETURN_18M': '{:.1%}',
+            'Vs_SP500_6M': '{:.1%}',
+            'Vs_SP500_1Y': '{:.1%}',
+            'Vs_SP500_18M': '{:.1%}',
+            'Vs_Sector_6M': '{:.1%}',
+            'Vs_Sector_1Y': '{:.1%}',
+            'Vs_Sector_18M': '{:.1%}'
         }),
         hide_index=True
     )
