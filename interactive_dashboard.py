@@ -184,7 +184,13 @@ if selected_investor:
             'ADJUSTED_TOTAL_TRANS_VALUE': '${:,.0f}',
             '6 Month Price': '${:.2f}',
             '1 Year Price': '${:.2f}',
-            '18 Month Price': '${:.2f}'
+            '18 Month Price': '${:.2f}',
+            'Vs_SP500_6M': '{:.1%}',
+            'Vs_SP500_1Y': '{:.1%}',
+            'Vs_SP500_18M': '{:.1%}',
+            'Vs_Sector_6M': '{:.1%}',
+            'Vs_Sector_1Y': '{:.1%}',
+            'Vs_Sector_18M': '{:.1%}'
         }),
         hide_index=True
     )
