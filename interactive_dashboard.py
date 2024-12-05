@@ -166,7 +166,75 @@ if selected_investor:
     investor_cik = investor_analysis_df[investor_analysis_df['OWNER_NAME'] == selected_investor]['OWNER_CIK'].iloc[0]
     investor_transactions = transactions_df[transactions_df['OWNER_CIK'] == investor_cik].copy()
     
-    # Convert percentage columns to numeric
+    # Restore original toggle text
+    aggregate_transactions = st.toggle("Combine transactions within 30 days", value=False)
+    
+    if aggregate_transactions:
+        # Sort by date first
+        investor_transactions['TRANS_DATE'] = pd.to_datetime(investor_transactions['TRANS_DATE'])
+        investor_transactions = investor_transactions.sort_values('TRANS_DATE')
+        
+        # Create monthly groups (restored from 6M)
+        investor_transactions['GROUP_DATE'] = investor_transactions['TRANS_DATE'].dt.to_period('M')
+        
+        # Aggregate the transactions
+        aggregated_transactions = investor_transactions.groupby(['GROUP_DATE', 'ISSUERNAME', 'ISSUERTRADINGSYMBOL', 'GICS_SECTOR', 'GICS_SUB_INDUSTRY']).agg({
+            'TRANS_DATE': 'first',  # Keep the first date in the group
+            'ADJUSTED_TRANS_SHARES': 'sum',
+            'ADJUSTED_TOTAL_TRANS_VALUE': 'sum',
+            'RETURN_6M': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            'RETURN_1Y': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            'RETURN_18M': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            'Vs_SP500_6M': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            'Vs_SP500_1Y': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            'Vs_SP500_18M': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            'Vs_Sector_6M': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            'Vs_Sector_1Y': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            'Vs_Sector_18M': lambda x: pd.to_numeric(x, errors='coerce').mean(),
+            '6 Month Price': 'last',
+            '1 Year Price': 'last',
+            '18 Month Price': 'last'
+        }).reset_index()
+        
+        # Calculate new price per share
+        aggregated_transactions['ADJUSTED_TRANS_PRICEPERSHARE'] = (
+            aggregated_transactions['ADJUSTED_TOTAL_TRANS_VALUE'] / 
+            aggregated_transactions['ADJUSTED_TRANS_SHARES']
+        )
+        
+        display_transactions = aggregated_transactions
+    else:
+        display_transactions = investor_transactions.copy()
+        # Convert percentage columns to numeric for non-aggregated view
+        percentage_cols = [
+            'RETURN_6M', 'RETURN_1Y', 'RETURN_18M',
+            'Vs_SP500_6M', 'Vs_SP500_1Y', 'Vs_SP500_18M',
+            'Vs_Sector_6M', 'Vs_Sector_1Y', 'Vs_Sector_18M'
+        ]
+        for col in percentage_cols:
+            display_transactions[col] = pd.to_numeric(display_transactions[col], errors='coerce')
+
+    # Modify the columns shown based on aggregation
+    display_cols = [
+        'ISSUERNAME', 'ISSUERTRADINGSYMBOL', 'GICS_SECTOR', 'GICS_SUB_INDUSTRY',
+        'TRANS_DATE', 'ADJUSTED_TRANS_SHARES', 'ADJUSTED_TRANS_PRICEPERSHARE', 
+        'ADJUSTED_TOTAL_TRANS_VALUE', '6 Month Price', '1 Year Price', '18 Month Price',
+        'RETURN_6M', 'Vs_SP500_6M', 'Vs_Sector_6M',
+        'RETURN_1Y', 'Vs_SP500_1Y', 'Vs_Sector_1Y',
+        'RETURN_18M', 'Vs_SP500_18M', 'Vs_Sector_18M'
+    ]
+    
+    # Create a formatter dictionary that checks for numeric columns
+    format_dict = {
+        'ADJUSTED_TRANS_SHARES': '{:.2f}',
+        'ADJUSTED_TRANS_PRICEPERSHARE': '${:.2f}',
+        'ADJUSTED_TOTAL_TRANS_VALUE': '${:,.0f}',
+        '6 Month Price': '${:.2f}',
+        '1 Year Price': '${:.2f}',
+        '18 Month Price': '${:.2f}'
+    }
+    
+    # Only add percentage formatting for columns that exist and are numeric
     percentage_cols = [
         'RETURN_6M', 'RETURN_1Y', 'RETURN_18M',
         'Vs_SP500_6M', 'Vs_SP500_1Y', 'Vs_SP500_18M',
@@ -174,39 +242,13 @@ if selected_investor:
     ]
     
     for col in percentage_cols:
-        investor_transactions[col] = pd.to_numeric(investor_transactions[col], errors='coerce')
+        if col in display_transactions.columns:
+            if pd.api.types.is_numeric_dtype(display_transactions[col]):
+                format_dict[col] = '{:.1%}'
     
     st.dataframe(
-        investor_transactions[[
-            'ISSUERNAME', 'ISSUERTRADINGSYMBOL', 'GICS_SECTOR', 'GICS_SUB_INDUSTRY',
-            'TRANS_DATE', 'TRANS_SHARES', 'TRANS_PRICEPERSHARE', 'TOTAL_TRANS_VALUE',
-            'SPLIT_ADJUSTMENT', 'ADJUSTED_TRANS_SHARES', 'ADJUSTED_TOTAL_TRANS_VALUE',
-            'ADJUSTED_TRANS_PRICEPERSHARE', '6 Month Price', '1 Year Price', '18 Month Price',
-            'RETURN_6M', 'Vs_SP500_6M', 'Vs_Sector_6M',
-            'RETURN_1Y', 'Vs_SP500_1Y', 'Vs_Sector_1Y',
-            'RETURN_18M', 'Vs_SP500_18M', 'Vs_Sector_18M'
-        ]]
+        display_transactions[display_cols]
         .sort_values('TRANS_DATE', ascending=False)
-        .style.format({
-            'TRANS_SHARES': '{:.2f}',  # 2 decimal places
-            'SPLIT_ADJUSTMENT': '{:.2f}',  # 2 decimal places
-            'ADJUSTED_TRANS_SHARES': '{:.2f}',  # 2 decimal places
-            'TRANS_PRICEPERSHARE': '${:.2f}',
-            'TOTAL_TRANS_VALUE': '${:,.0f}',
-            'ADJUSTED_TRANS_PRICEPERSHARE': '${:.2f}',
-            'ADJUSTED_TOTAL_TRANS_VALUE': '${:,.0f}',
-            '6 Month Price': '${:.2f}',
-            '1 Year Price': '${:.2f}',
-            '18 Month Price': '${:.2f}',
-            'RETURN_6M': '{:.1%}',
-            'RETURN_1Y': '{:.1%}',
-            'RETURN_18M': '{:.1%}',
-            'Vs_SP500_6M': '{:.1%}',
-            'Vs_SP500_1Y': '{:.1%}',
-            'Vs_SP500_18M': '{:.1%}',
-            'Vs_Sector_6M': '{:.1%}',
-            'Vs_Sector_1Y': '{:.1%}',
-            'Vs_Sector_18M': '{:.1%}'
-        }),
+        .style.format(format_dict),
         hide_index=True
     )
